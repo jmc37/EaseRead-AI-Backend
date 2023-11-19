@@ -33,7 +33,7 @@ class UserLogin(MethodView):
             UserModel.username == user_data["username"]).first()
 
         if user and pbkdf2_sha256.verify(user_data["password"], user.password):
-            access_token = create_access_token(secret=user.admin)
+            access_token = create_access_token(user_claims={"is_admin": user.admin})
             return {"access_token": access_token}
         abort(401, message="Invalid credentials.")
 

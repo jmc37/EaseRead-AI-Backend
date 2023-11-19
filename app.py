@@ -56,9 +56,9 @@ def create_app(db_url=None):
         )
 
     @jwt.additional_claims_loader
-    def add_claims_to_jwt(secret):
-        # TODO: Read from a config file instead of hard-coding
-        if secret == os.getenv("SECRET"):
+    def add_claims_to_jwt(user_claims):
+        secret = os.getenv("JWT_SECRET")
+        if user_claims == secret:
             return {"is_admin": True}
         return {"is_admin": False}
 
