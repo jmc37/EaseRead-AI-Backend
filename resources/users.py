@@ -47,7 +47,8 @@ class User(MethodView):
     @jwt_required()
     def delete(self, user_id):
         jwt = get_jwt()
-        if not jwt.get("is_admin"):
+        is_admin = jwt.get("is_admin", False)  # Default to False if "is_admin" is not present
+        if not is_admin:
             abort(401, message="Admin privilege required")
         user = UserModel.query.get_or_404(user_id)
         db.session.delete(user)
