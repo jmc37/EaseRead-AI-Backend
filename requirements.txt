@@ -1,4 +1,13 @@
-flask
-flask-smorest
-python-dotenv
-flask-jwt-extended
+flask==2.2.1      # A micro web framework for Python
+flask-smorest==0.42.0       # Flask extension for building REST APIs
+flask-cors          # Flask extension for handling Cross-Origin Resource Sharing
+python-dotenv       # Python module that allows you to use .env files for environment variables
+sqlalchemy          # SQL toolkit and Object-Relational Mapping (ORM) for Python
+flask-sqlalchemy    # Flask extension for using SQLAlchemy with Flask applications
+flask-jwt-extended==4.5.2  # Extended JWT support for Flask
+passlib             # Password hashing library for Python
+flask-migrate       # Flask extension for database migrations
+gunicorn            # WSGI HTTP server for Python web applications
+psycopg2            # PostgreSQL adapter for Python
+werkzeug==2.2.0
+blocklist

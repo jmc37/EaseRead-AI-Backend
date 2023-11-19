@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import typing as t
 
 from . import typing as ft
@@ -47,12 +45,12 @@ class View:
     #: The methods this view is registered for. Uses the same default
     #: (``["GET", "HEAD", "OPTIONS"]``) as ``route`` and
     #: ``add_url_rule`` by default.
-    methods: t.ClassVar[t.Collection[str] | None] = None
+    methods: t.ClassVar[t.Optional[t.Collection[str]]] = None
 
     #: Control whether the ``OPTIONS`` method is handled automatically.
     #: Uses the same default (``True``) as ``route`` and
     #: ``add_url_rule`` by default.
-    provide_automatic_options: t.ClassVar[bool | None] = None
+    provide_automatic_options: t.ClassVar[t.Optional[bool]] = None
 
     #: A list of decorators to apply, in order, to the generated view
     #: function. Remember that ``@decorator`` syntax is applied bottom
@@ -60,7 +58,7 @@ class View:
     #: decorator.
     #:
     #: .. versionadded:: 0.8
-    decorators: t.ClassVar[list[t.Callable]] = []
+    decorators: t.ClassVar[t.List[t.Callable]] = []
 
     #: Create a new instance of this view class for every request by
     #: default. If a view subclass sets this to ``False``, the same
@@ -94,8 +92,8 @@ class View:
         :attr:`init_every_request` to ``False``, the same instance will
         be used for every request.
 
-        Except for ``name``, all other arguments passed to this method
-        are forwarded to the view class ``__init__`` method.
+        The arguments passed to this method are forwarded to the view
+        class ``__init__`` method.
 
         .. versionchanged:: 2.2
             Added the ``init_every_request`` class attribute.
