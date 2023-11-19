@@ -46,3 +46,5 @@ This is the backend server for the EaseRead AI project.
 
 To start the Flask server, run the following command:
 flask run
+
+
