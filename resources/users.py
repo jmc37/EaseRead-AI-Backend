@@ -36,7 +36,7 @@ class UserLogin(MethodView):
             access_token = create_access_token(identity=user.admin)
             
             response = {"access_token": access_token}
-            set_access_cookies(response, access_token, secure=True)
+            set_access_cookies(response, access_token)
 
             return response
         abort(401, message="Invalid credentials.")
