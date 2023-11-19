@@ -69,6 +69,33 @@ class User(MethodView):
         db.session.commit()
         return {"message": "User deleted"}, 200
 
+    @jwt_required()
+    def put(self, user_id):
+        jwt = get_jwt()
+        is_admin = jwt.get("is_admin", False)
+
+        if not is_admin:
+            abort(401, message="Admin privilege required")
+
+        user = UserModel.query.get_or_404(user_id)
+        user.admin = True
+        db.session.commit()
+
+        return {"message": "User is now an admin"}, 200
+
+    @jwt_required()
+    def patch(self, user_id):
+        jwt = get_jwt()
+        is_admin = jwt.get("is_admin", False)
+
+        if not is_admin:
+            abort(401, message="Admin privilege required")
+
+        user = UserModel.query.get_or_404(user_id)
+        user.admin = False
+        db.session.commit()
+
+        return {"message": "User is no longer an admin"}, 200
 
 @blp.route("/logout")
 class UserLogout(MethodView):
