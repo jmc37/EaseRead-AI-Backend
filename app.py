@@ -30,8 +30,7 @@ def create_app(db_url=None):
     app.config[
         "OPENAPI_SWAGGER_UI_URL"
     ] = "https://cdn.jsdelivr.net/npm/swagger-ui-dist/"
-    app.config["SQLALCHEMY_DATABASE_URI"] = db_url or os.getenv(
-        "DATABASE_URL", "sqlite:///data.db")
+    app.config["SQLALCHEMY_DATABASE_URI"] = db_url or os.getenv("DATABASE_URL")
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config["PROPAGATE_EXCEPTIONS"] = True
     db.init_app(app)
@@ -57,9 +56,9 @@ def create_app(db_url=None):
         )
 
     @jwt.additional_claims_loader
-    def add_claims_to_jwt(identity):
+    def add_claims_to_jwt(secret):
         # TODO: Read from a config file instead of hard-coding
-        if identity == 1:
+        if secret == os.getenv("SECRET"):
             return {"is_admin": True}
         return {"is_admin": False}
 

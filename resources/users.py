@@ -33,7 +33,7 @@ class UserLogin(MethodView):
             UserModel.username == user_data["username"]).first()
 
         if user and pbkdf2_sha256.verify(user_data["password"], user.password):
-            access_token = create_access_token(identity=user.id)
+            access_token = create_access_token(secret=user.admin)
             return {"access_token": access_token}
         abort(401, message="Invalid credentials.")
 
@@ -44,8 +44,11 @@ class User(MethodView):
     def get(self, user_id):
         user = UserModel.query.get_or_404(user_id)
         return user
-
+    @jwt_required()
     def delete(self, user_id):
+        jwt = get_jwt()
+        if not jwt.get("is_admin"):
+            abort(401, message="Admin privilege required")
         user = UserModel.query.get_or_404(user_id)
         db.session.delete(user)
         db.session.commit()
