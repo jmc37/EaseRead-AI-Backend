@@ -4,7 +4,7 @@ from passlib.hash import pbkdf2_sha256
 from db import db
 from models import UserModel
 from schemas import UserSchema
-from flask_jwt_extended import create_access_token, jwt_required, get_jwt, set_access_cookies
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt
 from blocklist import BLOCKLIST
 blp = Blueprint("Users", "users", description="Operations on users")
 
@@ -34,11 +34,7 @@ class UserLogin(MethodView):
 
         if user and pbkdf2_sha256.verify(user_data["password"], user.password):
             access_token = create_access_token(identity=user.admin)
-            
-            response = {"access_token": access_token}
-            set_access_cookies(response, access_token)
-
-            return response
+            return {"access_token": access_token}
         abort(401, message="Invalid credentials.")
 
 @blp.route("/users")
@@ -46,12 +42,6 @@ class UsersList(MethodView):
     @jwt_required()
     @blp.response(200, UserSchema(many=True))
     def get(self):
-        jwt = get_jwt()
-        is_admin = jwt.get("is_admin", False)
-
-        if not is_admin:
-            abort(401, message="Admin privilege required")
-
         users = UserModel.query.all()
         return users
 
