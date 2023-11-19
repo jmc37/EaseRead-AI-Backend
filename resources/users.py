@@ -42,6 +42,12 @@ class UsersList(MethodView):
     @jwt_required()
     @blp.response(200, UserSchema(many=True))
     def get(self):
+        jwt = get_jwt()
+        is_admin = jwt.get("is_admin", False)
+
+        if not is_admin:
+            abort(401, message="Admin privilege required")
+
         users = UserModel.query.all()
         return users
 
