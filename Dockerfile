@@ -8,6 +8,8 @@ RUN apt-get update && \
     libjpeg-dev zlib1g-dev libpq-dev && \
     rm -rf /var/lib/apt/lists/*
 
+COPY requirements.txt .
+
 # Upgrade pip and install Python dependencies
 RUN pip install --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
