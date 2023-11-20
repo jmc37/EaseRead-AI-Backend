@@ -4,7 +4,6 @@ from transformers import pipeline
 from flask_jwt_extended import jwt_required
 from PIL import Image
 import base64
-from io import BytesIO
 from flask import request
 from schemas import DocumentQARequestSchema
 
@@ -35,13 +34,8 @@ class DocumentQA(MethodView):
             image = Image.open(image_path)
             result = document_qa_pipe(image=image, question=question)
 
-            # Convert image to base64 for displaying in HTML (optional)
-            buffered = BytesIO()
-            image.save(buffered, format="PNG")
-            img_str = "data:image/png;base64," + base64.b64encode(buffered.getvalue()).decode()
-
             # Return the result, and optionally the image
-            return {"result": result[0]['answer'], "image": img_str}
+            return {"result": result[0]['answer']}
         except Exception as e:
             print(f"Error processing document QA: {e}")
             abort(500, message="Internal Server Error")
