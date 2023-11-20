@@ -96,6 +96,18 @@ class User(MethodView):
         db.session.commit()
 
         return {"message": "User is no longer an admin"}, 200
+    
+@blp.route("/admin-dashboard")
+class AdminDashboard(MethodView):
+    @jwt_required()
+    def get(self):
+        jwt_data = get_jwt()
+        is_admin = jwt_data.get("is_admin", False)
+
+        if is_admin:
+            return {"check": True}
+        else:
+            abort(403, message="Admin privilege required")
 
 @blp.route("/logout")
 class UserLogout(MethodView):
