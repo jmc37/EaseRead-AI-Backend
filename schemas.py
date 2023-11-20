@@ -7,5 +7,4 @@ class UserSchema(Schema):
     admin = fields.Bool()
 
 class DocumentQARequestSchema(Schema):
-    question = fields.String(required=True)
-    file = fields.Field(required=True)
+    inputs = fields.String(required=True)

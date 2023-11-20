@@ -1,41 +1,37 @@
 from flask.views import MethodView
-from flask_smorest import Blueprint, abort
-from transformers import pipeline
-from flask_jwt_extended import jwt_required
-from PIL import Image
-import base64
-from flask import request
+from flask_smorest import Blueprint
+from flask import request, jsonify
+import requests  # Import the requests module
 from schemas import DocumentQARequestSchema
 
 blp = Blueprint("Document", "document", description="Document upload")
 
-# Initialize the pipeline outside the route to reuse it for multiple requests
-document_qa_pipe = pipeline("document-question-answering", model="impira/layoutlm-document-qa")
-
 @blp.route("/document_qa")
 class DocumentQA(MethodView):
-    @jwt_required()
     @blp.arguments(DocumentQARequestSchema)
     @blp.response(200)
-    def post(self, document_qa_data):
+    def post(self):  # Change from put to post
         try:
-            # Extract data from the request schema
-            question = document_qa_data.get('question')
-            uploaded_file = document_qa_data.get('file')
+            data = request.get_json()
 
-            if not question or not uploaded_file:
-                abort(400, message="Missing question or file in the request")
+            # Define headers
+            headers = {
+                'Authorization': 'Bearer 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',
+                'Content-Type': 'application/json',
+            }
 
-            # Save the uploaded image to a file
-            image_path = "images"
-            uploaded_file.save(image_path)
+            # Make a POST request to the Hugging Face API
+            response = requests.post('https://hzueekj3hyei2n49.us-east-1.aws.endpoints.huggingface.cloud', json=data, headers=headers)
 
-            # Process the image and question using the document-question-answering model
-            image = Image.open(image_path)
-            result = document_qa_pipe(image=image, question=question)
+            # Check if the request was successful (status code 200)
+            if response.status_code == 200:
+                result = response.json()
+                return jsonify(result)
+            else:
+                # Handle non-200 status codes appropriately
+                return jsonify({"error": f"Request failed with status code {response.status_code}"}), response.status_code
 
-            # Return the result, and optionally the image
-            return {"result": result[0]['answer']}
         except Exception as e:
-            print(f"Error processing document QA: {e}")
-            abort(500, message="Internal Server Error")
+            # Log the error for debugging
+            print(f"Error during processing: {str(e)}")
+            return jsonify({"error": "Internal Server Error"}), 500

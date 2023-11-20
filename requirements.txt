@@ -12,7 +12,4 @@ psycopg2
 werkzeug==2.2.0
 blocklist
 marshmallow>=3.13.0, <4
-transformers
-Pillow
-torch
 wheel
