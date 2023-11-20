@@ -1,4 +1,5 @@
 from flask.views import MethodView
+from flask import jsonify
 from flask_smorest import Blueprint, abort
 from passlib.hash import pbkdf2_sha256
 from db import db
@@ -105,9 +106,9 @@ class AdminDashboard(MethodView):
         is_admin = jwt_data.get("is_admin", False)
 
         if is_admin:
-            return {"check": True}
+            return jsonify(is_admin=True)
         else:
-            abort(403, message="Admin privilege required")
+            return jsonify(is_admin=False)
 
 @blp.route("/logout")
 class UserLogout(MethodView):
