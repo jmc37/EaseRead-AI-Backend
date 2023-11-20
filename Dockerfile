@@ -18,4 +18,4 @@ RUN pip install --upgrade pip && \
 COPY . .
 
 # Command to run the application
-CMD ["gunicorn", "-b", "0.0.0.0:80", "app:app"]
+CMD ["/bin/bash", "docker-entrypoint.sh"]
