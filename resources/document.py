@@ -6,6 +6,7 @@ from PIL import Image
 import base64
 from io import BytesIO
 from flask import request
+from schemas import DocumentQARequestSchema
 
 blp = Blueprint("Document", "document", description="Document upload")
 
@@ -15,7 +16,7 @@ document_qa_pipe = pipeline("document-question-answering", model="impira/layoutl
 @blp.route("/document_qa")
 class DocumentQA(MethodView):
     @jwt_required()
-    @blp.arguments(DocumentQARequestSchema)  # Assuming you have a schema for the request data
+    @blp.arguments(DocumentQARequestSchema)
     @blp.response(200)
     def post(self, document_qa_data):
         try:
@@ -27,7 +28,7 @@ class DocumentQA(MethodView):
                 abort(400, message="Missing question or file in the request")
 
             # Save the uploaded image to a file
-            image_path = "static/uploads/user_image.png"
+            image_path = "images"
             uploaded_file.save(image_path)
 
             # Process the image and question using the document-question-answering model
@@ -44,9 +45,3 @@ class DocumentQA(MethodView):
         except Exception as e:
             print(f"Error processing document QA: {e}")
             abort(500, message="Internal Server Error")
-
-# Add the blueprint to your Flask app
-blp.register_to(app)
-
-if __name__ == '__main__':
-    app.run(debug=True)
