@@ -5,9 +5,11 @@ from passlib.hash import pbkdf2_sha256
 from db import db
 from models import UserModel
 from schemas import UserSchema
+from redis_client import create_redis_client
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt
-from blocklist import BLOCKLIST
 blp = Blueprint("Users", "users", description="Operations on users")
+
+redis_client = create_redis_client()
 
 
 @blp.route("/register")
@@ -115,5 +117,10 @@ class UserLogout(MethodView):
     @jwt_required()
     def post(self):
         jti = get_jwt()["jti"]
-        BLOCKLIST.add(jti)
-        return {"message": "Successfully logged out."}
+        redis_key = f'token:{jti}'
+        expiration_time = get_jwt()["exp"] - get_jwt()["iat"]
+        
+        # Store the token in Redis with an expiration time
+        redis_client.setex(redis_key, expiration_time, "revoked")
+
+        return jsonify({"message": "Successfully logged out."})
