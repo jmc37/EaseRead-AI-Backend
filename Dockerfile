@@ -5,7 +5,7 @@ WORKDIR /app
 # Install system dependencies
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-    libjpeg-dev zlib1g-dev libpq-dev && \
+    libjpeg-dev zlib1g-dev libpq-dev gcc && \
     rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .
