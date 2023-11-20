@@ -10,7 +10,7 @@ blp = Blueprint("Document", "document", description="Document upload")
 class DocumentQA(MethodView):
     @blp.arguments(DocumentQARequestSchema)
     @blp.response(200)
-    def post(self):  # Change from put to post
+    def post(self):
         try:
             data = request.get_json()
 
