@@ -1,3 +1,4 @@
+wheel
 flask==2.2.1
 flask-smorest==0.42.0
 flask-cors
@@ -8,8 +9,12 @@ flask-jwt-extended==4.5.2
 passlib
 flask-migrate
 gunicorn
-psycopg2
+psycopg2-binary==2.9.1
 werkzeug==2.2.0
 marshmallow>=3.13.0, <4
 requests==2.26.0
+<<<<<<< HEAD
 redis
+=======
+
+>>>>>>> 27f6de97db49b9fb5d957714b97b87af245e4539

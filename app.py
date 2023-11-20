@@ -16,7 +16,6 @@ import redis
 
 
 from resources.users import blp as UserBlueprint
-from resources.document import blp as DocumentBlueprint
 
 def create_app(db_url=None):
     app = Flask(__name__)
