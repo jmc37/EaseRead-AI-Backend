@@ -12,4 +12,4 @@ psycopg2            # PostgreSQL adapter for Python
 werkzeug==2.2.0
 blocklist
 transformers
-PIL
+Pillow
