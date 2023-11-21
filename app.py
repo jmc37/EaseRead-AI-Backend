@@ -38,7 +38,7 @@ def create_app(db_url=None):
     db.init_app(app)
     migrate = Migrate(app, db)
     api = Api(app)
-    app.config["JWT_SECRET_KEY"] = "jose"
+    app.config["JWT_SECRET_KEY"] = os.getenv("SECRET")
 
     # Initialize Redis client
     redis_client = create_redis_client()
@@ -62,7 +62,6 @@ def create_app(db_url=None):
 
     @jwt.additional_claims_loader
     def add_claims_to_jwt(identity):
-        secret = os.getenv("JWT_SECRET")
         if identity:
             return {"is_admin": True}
         return {"is_admin": False}
