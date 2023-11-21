@@ -10,7 +10,8 @@ from flask_jwt_extended import create_access_token, jwt_required, get_jwt
 blp = Blueprint("Users", "users", description="Operations on users")
 
 redis_client = create_redis_client()
-
+if not redis_client:
+    print("redis client does not exist")
 
 @blp.route("/register")
 class UserRegister(MethodView):
