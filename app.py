@@ -20,7 +20,7 @@ from resources.users import blp as UserBlueprint
 # Creates app
 def create_app(db_url=None):
     app = Flask(__name__)
-    CORS(app, resources={r"/*": {"origins": "*"}})
+    CORS(app, resources={r"/*": {"origins": ["http://127.0.0.1:5501", "https://easeread-frontend.onrender.com"]}})
 
     load_dotenv()
 
