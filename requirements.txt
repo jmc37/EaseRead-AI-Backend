@@ -13,3 +13,4 @@ werkzeug==2.2.0
 marshmallow>=3.13.0, <4
 requests==2.26.0
 redis
+requests
