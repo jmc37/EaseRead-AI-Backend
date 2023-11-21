@@ -61,6 +61,7 @@ class User(MethodView):
     def get(self, user_id):
         user = UserModel.query.get_or_404(user_id)
         return user
+    
     @jwt_required()
     def delete(self, user_id):
         jwt = get_jwt()
@@ -121,6 +122,11 @@ class UserLogout(MethodView):
         expiration_time = get_jwt()["exp"] - get_jwt()["iat"]
         
         # Store the token in Redis with an expiration time
-        redis_client.setex(redis_key, expiration_time, "revoked")
+        try:
+            redis_client.setex(redis_key, expiration_time, "revoked")
+        except Exception as e:
+            # Handle the exception (e.g., log an error message)
+            return jsonify({"error": e}), 500
+
 
         return jsonify({"message": "Successfully logged out."})
