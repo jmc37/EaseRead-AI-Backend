@@ -9,7 +9,7 @@ from models import UserModel
 from schemas import UserSchema, UserRegisterSchema
 from redis_client import create_redis_client
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt
-from sqlalchemy import _or
+from sqlalchemy import or_
 blp = Blueprint("Users", "users", description="Operations on users")
 
 redis_client = create_redis_client()
@@ -29,7 +29,7 @@ class UserRegister(MethodView):
     @blp.arguments(UserRegisterSchema)
     def post(self, user_data):
         if UserModel.query.filter(
-            _or(
+            or_(
             UserModel.username == user_data["username"], 
             UserModel.email ==user_data["email"] 
             )
