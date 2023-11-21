@@ -16,6 +16,7 @@ import redis
 
 
 from resources.users import blp as UserBlueprint
+from resources.document import chat_bp as Chat
 
 # Creates app
 def create_app(db_url=None):
@@ -102,5 +103,6 @@ def create_app(db_url=None):
         )
 
     api.register_blueprint(UserBlueprint)
+    api.register_blueprint(Chat)
 
     return app
