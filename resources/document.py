@@ -21,7 +21,7 @@ def query_hugging_face(payload):
 # Define your views and routes within this blueprint
 @chat_bp.route("/chat", methods=["POST"])
 class ChatView(MethodView):
-    @jwt_required()
+    # @jwt_required()
     def post(self):
         try:
             data = request.get_json()
@@ -50,6 +50,3 @@ class ChatView(MethodView):
         except Exception as e:
             print("Error during processing:", e)
             return jsonify({"error": "Error during processing"}), 500
-
-# Add this line at the end of your existing code to register the new endpoint
-chat_bp.add_url_rule("/chat", view_func=ChatView.as_view("chat"))
