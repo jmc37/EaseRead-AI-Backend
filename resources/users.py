@@ -45,7 +45,7 @@ class UserRegister(MethodView):
         db.session.commit()
 
         send_simple_message(
-            user=user.email,
+            to=user.email,
             subject="Succesfully Signed Up",
             body=f"Hi {user.name}! You have sucessfully signed up for EaseRead API"
         )
