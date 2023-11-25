@@ -76,7 +76,6 @@ class UserLogin(MethodView):
             # Create a response object
             response = make_response()
             # Set the access token as an HTTP cookie
-            response.headers.add('Access-Control-Allow-Credentials', 'true')
             response.set_cookie(
             'access_token',
             value=access_token,

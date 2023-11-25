@@ -21,7 +21,7 @@ from resources.document import chat_bp as Chat
 # Creates app
 def create_app(db_url=None):
     app = Flask(__name__)
-    CORS(app, supports_credentials=True, resources={r"/*": {"origins": ["http://127.0.0.1:5501", "https://easeread-frontend.onrender.com"]}})
+    CORS(app, supports_credentials=True, allow_headers=["Content-Type"], resources={r"/*": {"origins": ["http://127.0.0.1:5501", "https://easeread-frontend.onrender.com"]}})
 
     load_dotenv()
 
