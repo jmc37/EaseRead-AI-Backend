@@ -175,6 +175,7 @@ class UserLogout(MethodView):
         route = RequestModel.query.filter_by(method='POST', endpoint=f'{API_VERSION}/logout').first()
         if route:
             route.requests += 1
+        db.session.commit()
         jti = get_jwt()["jti"]
         redis_key = f'token:{jti}'
         expiration_time = get_jwt()["exp"] - get_jwt()["iat"]
