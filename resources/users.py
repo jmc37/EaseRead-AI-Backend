@@ -74,8 +74,7 @@ class UserLogin(MethodView):
                 route.requests += 1
             db.session.commit()
             # Create a response object
-            response = make_response({"access_token": access_token})
-
+            response = make_response()
             # Set the access token as an HTTP cookie
             response.set_cookie(
             'access_token',
