@@ -9,6 +9,7 @@ from models import UserModel, RequestModel
 from schemas import UserSchema, UserRegisterSchema
 from redis_client import create_redis_client
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt
+from datetime import datetime, timedelta
 from sqlalchemy import or_
 
 API_VERSION = "/API/v1"
@@ -61,6 +62,7 @@ class UserRegister(MethodView):
 class UserLogin(MethodView):
     @blp.arguments(UserSchema)
     def post(self, user_data):
+        expiration_time = datetime.utcnow() + timedelta(seconds=1800)
         user = UserModel.query.filter(
             UserModel.username == user_data["username"]).first()
 
@@ -75,8 +77,14 @@ class UserLogin(MethodView):
             response = make_response({"access_token": access_token})
 
             # Set the access token as an HTTP cookie
-            response.set_cookie('access_token', value=access_token, httponly=True, secure=True)
-
+            response.set_cookie(
+            'access_token',
+            value=access_token,
+            max_age=1800,  # Set the max_age to 1800 seconds (30 minutes)
+            expires=expiration_time.timestamp(),  # Set the expires parameter with the expiration time
+            httponly=True,
+            secure=True
+        )
             return response
         abort(401, message="Invalid credentials.")
 
