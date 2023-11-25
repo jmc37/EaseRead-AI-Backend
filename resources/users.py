@@ -1,7 +1,7 @@
 import os
 import requests
 from flask.views import MethodView
-from flask import jsonify
+from flask import jsonify, make_response
 from flask_smorest import Blueprint, abort
 from passlib.hash import pbkdf2_sha256
 from db import db
@@ -71,7 +71,13 @@ class UserLogin(MethodView):
             if route:
                 route.requests += 1
             db.session.commit()
-            return {"access_token": access_token}
+            # Create a response object
+            response = make_response({"access_token": access_token})
+
+            # Set the access token as an HTTP cookie
+            response.set_cookie('access_token', value=access_token, httponly=True, secure=True)
+
+            return response
         abort(401, message="Invalid credentials.")
 
 @blp.route(f"{API_VERSION}/users")
