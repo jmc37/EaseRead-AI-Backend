@@ -85,6 +85,7 @@ class UserLogin(MethodView):
             secure=False,
             samesite='None',  # Add SameSite attribute
         )
+            print(response)
             return response
         abort(401, message="Invalid credentials.")
 
