@@ -10,6 +10,8 @@ from schemas import UserSchema, UserRegisterSchema
 from redis_client import create_redis_client
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt
 from sqlalchemy import or_
+
+API_VERSION = "/API/v1"
 blp = Blueprint("Users", "users", description="Operations on users")
 
 redis_client = create_redis_client()
@@ -24,7 +26,7 @@ def send_simple_message(to, subject, body):
 			"subject": subject,
 			"text": body})
 
-@blp.route("/register")
+@blp.route(f"{API_VERSION}/register")
 class UserRegister(MethodView):
     @blp.arguments(UserRegisterSchema)
     def post(self, user_data):
@@ -39,7 +41,7 @@ class UserRegister(MethodView):
             username=user_data["username"],
             name=user_data["name"],
             email=user_data["email"],
-            password=pbkdf2_sha256.hash(user_data["password"])
+            password=pbkdf2_sha256.hash(user_data["password"]),
         )
         db.session.add(user)
         db.session.commit()
@@ -52,7 +54,7 @@ class UserRegister(MethodView):
         return {"message": "User created successfully."}, 201
 
 
-@blp.route("/login")
+@blp.route(f"{API_VERSION}/login")
 class UserLogin(MethodView):
     @blp.arguments(UserSchema)
     def post(self, user_data):
@@ -61,10 +63,12 @@ class UserLogin(MethodView):
 
         if user and pbkdf2_sha256.verify(user_data["password"], user.password):
             access_token = create_access_token(identity=user.admin)
+            user.requests += 1
+            db.session.commit()
             return {"access_token": access_token}
         abort(401, message="Invalid credentials.")
 
-@blp.route("/users")
+@blp.route(f"{API_VERSION}/users")
 class UsersList(MethodView):
     @jwt_required()
     @blp.response(200, UserSchema(many=True))
@@ -79,11 +83,13 @@ class UsersList(MethodView):
         return users
 
 
-@blp.route("/user/<int:user_id>")
+@blp.route(f"{API_VERSION}/user/<int:user_id>")
 class User(MethodView):
     @blp.response(200, UserSchema)
     def get(self, user_id):
         user = UserModel.query.get_or_404(user_id)
+        user.requests += 1
+        db.session.commit()
         return user
     
     @jwt_required()
@@ -125,7 +131,7 @@ class User(MethodView):
 
         return {"message": "User is no longer an admin"}, 200
     
-@blp.route("/admin-dashboard")
+@blp.route(f"{API_VERSION}/admin-dashboard")
 class AdminDashboard(MethodView):
     @jwt_required()
     def get(self):
@@ -137,7 +143,7 @@ class AdminDashboard(MethodView):
         else:
             return jsonify(is_admin=False)
 
-@blp.route("/logout")
+@blp.route(f"{API_VERSION}/logout")
 class UserLogout(MethodView):
     @jwt_required()
     def post(self):

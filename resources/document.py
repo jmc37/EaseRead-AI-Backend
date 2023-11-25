@@ -1,7 +1,9 @@
 from flask import request, jsonify
 from flask.views import MethodView
 from flask_smorest import Blueprint, abort
+import os
 import requests
+API_VERSION = "/API/v1"
 
 
 chat_bp = Blueprint("Chat", "chat", description="Operations on chat")
@@ -9,7 +11,7 @@ chat_bp = Blueprint("Chat", "chat", description="Operations on chat")
 # Hugging Face API URL and headers
 HUGGING_FACE_API_URL = "https://hzueekj3hyei2n49.us-east-1.aws.endpoints.huggingface.cloud"
 HUGGING_FACE_HEADERS = {
-    "Authorization": "Bearer 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",
+    "Authorization": f"Bearer {os.getenv('AI_TOKEN')}",
     "Content-Type": "application/json"
 }
 
@@ -19,7 +21,7 @@ def query_hugging_face(payload):
     return response.json()
 
 # Define your views and routes within this blueprint
-@chat_bp.route("/chat", methods=["POST"])
+@chat_bp.route(f"{API_VERSION}/chat", methods=["POST"])
 class ChatView(MethodView):
     # @jwt_required()
     def post(self):
