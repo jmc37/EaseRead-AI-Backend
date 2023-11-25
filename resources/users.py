@@ -5,7 +5,7 @@ from flask import jsonify
 from flask_smorest import Blueprint, abort
 from passlib.hash import pbkdf2_sha256
 from db import db
-from models import UserModel
+from models import UserModel, RequestModel
 from schemas import UserSchema, UserRegisterSchema
 from redis_client import create_redis_client
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt
@@ -43,6 +43,9 @@ class UserRegister(MethodView):
             email=user_data["email"],
             password=pbkdf2_sha256.hash(user_data["password"]),
         )
+        route = RequestModel.query.filter_by(method='POST', endpoint=f'{API_VERSION}/register').first()
+        if route:
+            route.requests += 1
         db.session.add(user)
         db.session.commit()
 
@@ -64,6 +67,9 @@ class UserLogin(MethodView):
         if user and pbkdf2_sha256.verify(user_data["password"], user.password):
             access_token = create_access_token(identity=user.admin)
             user.requests += 1
+            route = RequestModel.query.filter_by(method='POST', endpoint=f'{API_VERSION}/login').first()
+            if route:
+                route.requests += 1
             db.session.commit()
             return {"access_token": access_token}
         abort(401, message="Invalid credentials.")
@@ -73,12 +79,15 @@ class UsersList(MethodView):
     @jwt_required()
     @blp.response(200, UserSchema(many=True))
     def get(self):
+        route = RequestModel.query.filter_by(method='GET', endpoint=f'{API_VERSION}/users').first()
+        if route:
+            route.requests += 1
+        db.session.commit()
         jwt = get_jwt()
         is_admin = jwt.get("is_admin", False)
 
         if not is_admin:
             abort(401, message="Admin privilege required")
-
         users = UserModel.query.all()
         return users
 
@@ -87,6 +96,9 @@ class UsersList(MethodView):
 class User(MethodView):
     @blp.response(200, UserSchema)
     def get(self, user_id):
+        route = RequestModel.query.filter_by(method='GET', endpoint=f'{API_VERSION}/user/<int:user_id>').first()
+        if route:
+            route.requests += 1
         user = UserModel.query.get_or_404(user_id)
         user.requests += 1
         db.session.commit()
@@ -94,6 +106,9 @@ class User(MethodView):
     
     @jwt_required()
     def delete(self, user_id):
+        route = RequestModel.query.filter_by(method='DELETE', endpoint=f'{API_VERSION}/user/<int:user_id>').first()
+        if route:
+            route.requests += 1
         jwt = get_jwt()
         is_admin = jwt.get("is_admin", False)  # Default to False if "is_admin" is not present
         if not is_admin:
@@ -105,6 +120,9 @@ class User(MethodView):
 
     @jwt_required()
     def put(self, user_id):
+        route = RequestModel.query.filter_by(method='PUT', endpoint=f'{API_VERSION}/user/<int:user_id>').first()
+        if route:
+            route.requests += 1
         jwt = get_jwt()
         is_admin = jwt.get("is_admin", False)
 
@@ -119,6 +137,9 @@ class User(MethodView):
 
     @jwt_required()
     def patch(self, user_id):
+        route = RequestModel.query.filter_by(method='PATCH', endpoint=f'{API_VERSION}/user/<int:user_id>').first()
+        if route:
+            route.requests += 1
         jwt = get_jwt()
         is_admin = jwt.get("is_admin", False)
 
@@ -135,6 +156,10 @@ class User(MethodView):
 class AdminDashboard(MethodView):
     @jwt_required()
     def get(self):
+        route = RequestModel.query.filter_by(method='GET', endpoint=f'{API_VERSION}/admin-dashboard').first()
+        if route:
+            route.requests += 1
+        db.session.commit()
         jwt_data = get_jwt()
         is_admin = jwt_data.get("is_admin", False)
 
@@ -147,6 +172,9 @@ class AdminDashboard(MethodView):
 class UserLogout(MethodView):
     @jwt_required()
     def post(self):
+        route = RequestModel.query.filter_by(method='POST', endpoint=f'{API_VERSION}/logout').first()
+        if route:
+            route.requests += 1
         jti = get_jwt()["jti"]
         redis_key = f'token:{jti}'
         expiration_time = get_jwt()["exp"] - get_jwt()["iat"]

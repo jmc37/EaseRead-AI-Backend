@@ -3,6 +3,8 @@ from flask.views import MethodView
 from flask_smorest import Blueprint, abort
 import os
 import requests
+from db import db
+from models import RequestModel
 API_VERSION = "/API/v1"
 
 
@@ -47,6 +49,11 @@ class ChatView(MethodView):
             # Process the response as needed (you can log it or return it to the frontend)
             print("Response from Hugging Face API:", hugging_face_response)
 
+             # Increment the requests count in the routes table by 1
+            route = RequestModel.query.filter_by(method='POST', endpoint=f'{API_VERSION}/chat').first()
+            if route:
+                route.requests += 1
+                db.session.commit()
             return jsonify({"answer": hugging_face_response[0].get("generated_text").replace("\n", "<br>")})
 
         except Exception as e:
