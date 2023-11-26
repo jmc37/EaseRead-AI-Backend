@@ -11,6 +11,7 @@ from redis_client import create_redis_client
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt
 from datetime import datetime, timedelta
 from sqlalchemy import or_
+from flask_cors import cross_origin
 
 API_VERSION = "/API/v1"
 blp = Blueprint("Users", "users", description="Operations on users")
@@ -189,6 +190,7 @@ class AdminDashboard(MethodView):
 @blp.route(f"{API_VERSION}/logout")
 class UserLogout(MethodView):
     @jwt_required()
+    @cross_origin(supports_credentials=True)
     def post(self):
         route = RequestModel.query.filter_by(method='POST', endpoint=f'{API_VERSION}/logout').first()
         if route:
