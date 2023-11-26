@@ -86,7 +86,7 @@ class UserLogin(MethodView):
             samesite='None',  # Add SameSite attribute
         )
             print(response)
-            return response
+            return jsonify(response)
         abort(401, message="Invalid credentials.")
 
 @blp.route(f"{API_VERSION}/users")
