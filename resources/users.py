@@ -73,8 +73,10 @@ class UserLogin(MethodView):
             if route:
                 route.requests += 1
             db.session.commit()
-            # Create a response object
-            response = make_response()
+
+            # Create a JSON response
+            response = jsonify({"access_token": access_token})
+
             # Set the access token as an HTTP cookie
             response.set_cookie(
             'access_token',
@@ -85,8 +87,10 @@ class UserLogin(MethodView):
             secure=False,
             samesite='None',  # Add SameSite attribute
         )
+            # Set Access-Control-Allow-Credentials header
+            response.headers.add("Access-Control-Allow-Credentials", "true")
             print(response)
-            return jsonify(response)
+            return response
         abort(401, message="Invalid credentials.")
 
 @blp.route(f"{API_VERSION}/users")
