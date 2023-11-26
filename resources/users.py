@@ -88,7 +88,7 @@ class UserLogin(MethodView):
             samesite='None',  # Add SameSite attribute
         )
             # Set Access-Control-Allow-Credentials header
-            response.headers.add("Access-Control-Allow-Credentials", "true")
+            # response.headers.add("Access-Control-Allow-Credentials", "true")
             print(response)
             return response
         abort(401, message="Invalid credentials.")
