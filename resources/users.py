@@ -106,7 +106,6 @@ class UsersList(MethodView):
         users = UserModel.query.all()
         return users
 
-
 @blp.route(f"{API_VERSION}/user/<int:user_id>")
 class User(MethodView):
     @blp.response(200, UserSchema)
@@ -201,6 +200,9 @@ class UserLogout(MethodView):
         except Exception as e:
             # Handle the exception (e.g., log an error message)
             return jsonify({"error": e}), 500
+        
+        # Remove the access token cookie
+        response = make_response({"message": "Successfully logged out."})
+        response.delete_cookie('access_token')
 
-
-        return jsonify({"message": "Successfully logged out."})
+        return jsonify(response)
