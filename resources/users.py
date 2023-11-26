@@ -84,7 +84,7 @@ class UserLogin(MethodView):
             max_age=1800,  # Set the max_age to 1800 seconds (30 minutes)
             expires=expiration_time.strftime("%a, %d %b %Y %H:%M:%S GMT"),  # Format expiration time as RFC 1123 string
             httponly=True,
-            secure=False,
+            secure=True,
             samesite='None',  # Add SameSite attribute
         )
             # Set Access-Control-Allow-Credentials header
