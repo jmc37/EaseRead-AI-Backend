@@ -75,7 +75,7 @@ class UserLogin(MethodView):
             db.session.commit()
 
             # Create a JSON response
-            response = jsonify({"access_token": access_token})
+            response = make_response({"access_token": access_token})
 
             # Set the access token as an HTTP cookie
             response.set_cookie(

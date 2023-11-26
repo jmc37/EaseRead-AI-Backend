@@ -102,7 +102,10 @@ def create_app(db_url=None):
             ),
             401,
         )
-
+    @app.after_request
+    def after_request(response):
+        response.headers.add('Access-Control-Allow-Credentials', 'true')
+        return response
     api.register_blueprint(UserBlueprint)
     api.register_blueprint(Chat)
 
