@@ -104,7 +104,8 @@ def create_app(db_url=None):
         )
     @app.after_request
     def after_request(response):
-        response.headers.add('Access-Control-Allow-Credentials', 'true')
+        if 'Access-Control-Allow-Credentials' not in response.headers:
+            response.headers['Access-Control-Allow-Credentials'] = 'true'
         return response
     api.register_blueprint(UserBlueprint)
     api.register_blueprint(Chat)
