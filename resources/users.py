@@ -12,6 +12,7 @@ from flask_jwt_extended import create_access_token, jwt_required, get_jwt
 from datetime import datetime, timedelta
 from sqlalchemy import or_
 from flask_cors import cross_origin
+from flask import request
 
 API_VERSION = "/API/v1"
 blp = Blueprint("Users", "users", description="Operations on users")
@@ -179,8 +180,20 @@ class AdminDashboard(MethodView):
         if route:
             route.requests += 1
         db.session.commit()
-        jwt_data = get_jwt()
-        is_admin = jwt_data.get("is_admin", False)
+
+        # Access JWT token from the Authorization header
+        jwt_token = request.headers.get("Authorization")
+        
+        # Extract the actual token value from the Authorization header
+        if jwt_token and jwt_token.startswith("Bearer "):
+            jwt_token = jwt_token[len("Bearer "):]
+
+        # Access the access_token cookie
+        access_token_cookie = request.cookies.get('access_token')
+
+        if jwt_token == access_token_cookie:
+            jwt_data = get_jwt()
+            is_admin = jwt_data.get("is_admin", False)
 
         if is_admin:
             return jsonify(is_admin=True)
