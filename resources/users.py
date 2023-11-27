@@ -214,5 +214,5 @@ class UserLogout(MethodView):
         response.headers.add('Access-Control-Allow-Credentials', 'true')
 
 
-        return jsonify(response)
+        return response
 
