@@ -210,7 +210,6 @@ class UserLogout(MethodView):
         # Remove the access token cookie
         response = make_response({"message": "Successfully logged out."})
         response.delete_cookie('access_token')
-        response.headers.add('Access-Control-Allow-Origin', 'https://easeread-frontend.onrender.com')
         response.headers.add('Access-Control-Allow-Credentials', 'true')
 
 
