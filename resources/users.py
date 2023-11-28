@@ -179,35 +179,23 @@ class User(MethodView):
         return {"message": "User is no longer an admin"}, 200
 
 
-
-# @blp.route(f"{API_VERSION}/admin-dashboard")
-# class AdminDashboard(MethodView):
-#     @jwt_required()
-#     def get(self):
-#         route = RequestModel.query.filter_by(method='GET', endpoint=f'{API_VERSION}/admin-dashboard').first()
-#         if route:
-#             route.requests += 1
-#         db.session.commit()
-#         jwt_data = get_jwt()
-#         is_admin = jwt_data.get("admin", False)
-
-#         if is_admin:
-#             return jsonify(is_admin=True)
-#         else:
-#             return jsonify(is_admin=False)
-
 @blp.route(f"{API_VERSION}/logout")
 class UserLogout(MethodView):
-    @jwt_required()
     @cross_origin(supports_credentials=True)
     def post(self):
         route = RequestModel.query.filter_by(method='POST', endpoint=f'{API_VERSION}/logout').first()
         if route:
             route.requests += 1
         db.session.commit()
-        jti = get_jwt()["jti"]
+
+        # Access the access_token cookie
+        access_token_cookie = request.cookies.get('access_token')
+        # Decode the token using the secret key
+        decoded_token = decode_token(access_token_cookie)
+
+        jti = decoded_token["jti"]
         redis_key = f'token:{jti}'
-        expiration_time = get_jwt()["exp"] - get_jwt()["iat"] 
+        expiration_time = decoded_token["exp"] - decoded_token["iat"] 
         # Store the token in Redis with an expiration time
         try:
             redis_client.setex(redis_key, expiration_time, "revoked")
