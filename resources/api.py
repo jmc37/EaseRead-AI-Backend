@@ -32,21 +32,7 @@ class AllAPIRoutes(MethodView):
             abort(401, message="Admin privilege required")
 
         # Query all unique API routes recorded in the RequestModel
-        api_routes = (
-            db.session.query(RequestModel)
-            .distinct(RequestModel.endpoint)
-            .all()
-        )
+        requests = RequestModel.query.all()
 
-        # Construct a response object
-        api_routes_data = [
-            {
-                "id": route.id,
-                "method": route.method,
-                "endpoint": route.endpoint,
-                "requests": route.requests,
-            }
-            for route in api_routes
-        ]
 
-        return jsonify(api_routes_data)
+        return requests
