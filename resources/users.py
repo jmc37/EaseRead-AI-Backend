@@ -69,8 +69,8 @@ class UserLogin(MethodView):
             UserModel.username == user_data["username"]).first()
 
         if user and pbkdf2_sha256.verify(user_data["password"], user.password):
-            additional_claims = {"username": user.username, "admin": user.admin}
-            access_token = create_access_token(identity=user.admin, additional_claims=additional_claims)
+            additional_claims = {"admin": user.admin}
+            access_token = create_access_token(identity=user.username, additional_claims=additional_claims)
             user.requests += 1
             route = RequestModel.query.filter_by(method='POST', endpoint=f'{API_VERSION}/login').first()
             if route:
@@ -106,7 +106,7 @@ class UsersList(MethodView):
             route.requests += 1
         db.session.commit()
         jwt = get_jwt()
-        is_admin = jwt.get("is_admin", False)
+        is_admin = jwt.get("admin", False)
 
         if not is_admin:
             abort(401, message="Admin privilege required")
@@ -131,7 +131,7 @@ class User(MethodView):
         if route:
             route.requests += 1
         jwt = get_jwt()
-        is_admin = jwt.get("is_admin", False)  # Default to False if "is_admin" is not present
+        is_admin = jwt.get("admin", False)  # Default to False if "is_admin" is not present
         if not is_admin:
             abort(401, message="Admin privilege required")
         user = UserModel.query.get_or_404(user_id)
@@ -145,7 +145,7 @@ class User(MethodView):
         if route:
             route.requests += 1
         jwt = get_jwt()
-        is_admin = jwt.get("is_admin", False)
+        is_admin = jwt.get("admin", False)
 
         if not is_admin:
             abort(401, message="Admin privilege required")
@@ -162,7 +162,7 @@ class User(MethodView):
         if route:
             route.requests += 1
         jwt = get_jwt()
-        is_admin = jwt.get("is_admin", False)
+        is_admin = jwt.get("admin", False)
 
         if not is_admin:
             abort(401, message="Admin privilege required")
@@ -184,7 +184,7 @@ class AdminDashboard(MethodView):
             route.requests += 1
         db.session.commit()
         jwt_data = get_jwt()
-        is_admin = jwt_data.get("is_admin", False)
+        is_admin = jwt_data.get("admin", False)
 
         if is_admin:
             return jsonify(is_admin=True)

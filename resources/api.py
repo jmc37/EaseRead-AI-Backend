@@ -16,7 +16,7 @@ class AllAPIRoutes(MethodView):
     @blp.response(200, description="Get all API routes")
     def get(self):
         jwt = get_jwt()
-        is_admin = jwt.get("is_admin", False)
+        is_admin = jwt.get("admin", False)
 
         if not is_admin:
             abort(401, message="Admin privilege required")
