@@ -98,15 +98,18 @@ class UserLogin(MethodView):
 
 @blp.route(f"{API_VERSION}/users")
 class UsersList(MethodView):
-    @jwt_required()
     @blp.response(200, UserSchema(many=True))
     def get(self):
         route = RequestModel.query.filter_by(method='GET', endpoint=f'{API_VERSION}/users').first()
         if route:
             route.requests += 1
         db.session.commit()
-        jwt = get_jwt()
-        is_admin = jwt.get("admin", False)
+
+        access_token_cookie = request.cookies.get('access_token')
+        # Decode the token using the secret key
+        decoded_token = decode_token(access_token_cookie)
+
+        is_admin = decoded_token.get("admin", False)
 
         if not is_admin:
             abort(401, message="Admin privilege required")
