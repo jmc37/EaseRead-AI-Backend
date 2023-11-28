@@ -8,7 +8,7 @@ from db import db
 from models import UserModel, RequestModel
 from schemas import UserSchema, UserRegisterSchema
 from redis_client import create_redis_client
-from flask_jwt_extended import create_access_token, jwt_required, get_jwt
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt,decode_token
 from datetime import datetime, timedelta
 from sqlalchemy import or_
 from flask_cors import cross_origin
@@ -237,16 +237,21 @@ class AdminDashboard(MethodView):
         access_token_cookie = request.cookies.get('access_token')
 
         try:
-            # Verify the JWT token from the access cookie
-            jwt_data = get_jwt(cookie=str(access_token_cookie))
-        except Exception as e:
-            # Handle token verification failure (e.g., log an error message)
-            return jsonify({"error": f"Token verification failed: {e}"}), 401
+            # Decode the token using the secret key
+            decoded_token = decode_token(access_token_cookie)
 
-        is_admin = jwt_data.get("is_admin", False)
-        response = make_response({"message": "Successfully logged out."})
-        response.headers.add('Access-Control-Allow-Credentials', 'true')
-        if is_admin:
-            return jsonify(is_admin=True)
-        else:
-            return jsonify(is_admin=False)
+            # Access the username from the decoded token
+            current_username = decoded_token['sub']
+
+            # Fetch the user from the database based on the username
+            # and check if the user has admin privileges.
+            user = UserModel.query.filter_by(username=current_username).first()
+
+            if user and user.admin:
+                return jsonify(is_admin=True)
+            else:
+                return jsonify(is_admin=False)
+
+        except Exception as e:
+            # Handle token decoding failure (e.g., log an error message)
+            return jsonify({"error": f"Token decoding failed: {e}"}), 401
