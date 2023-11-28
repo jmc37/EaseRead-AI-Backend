@@ -119,7 +119,7 @@ class UsersList(MethodView):
 @blp.route(f"{API_VERSION}/userRequests")
 class User(MethodView):
     @blp.response(200, UserSchema)
-    def get(self, username):
+    def get(self):
         route = RequestModel.query.filter_by(method='GET', endpoint=f'{API_VERSION}/userRequests').first()
         if route:
             route.requests += 1
