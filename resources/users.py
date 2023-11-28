@@ -116,14 +116,18 @@ class UsersList(MethodView):
         users = UserModel.query.all()
         return users
 
-@blp.route(f"{API_VERSION}/user/<string:username>")
+@blp.route(f"{API_VERSION}/userRequests")
 class User(MethodView):
     @blp.response(200, UserSchema)
     def get(self, username):
         route = RequestModel.query.filter_by(method='GET', endpoint=f'{API_VERSION}/user/<string:username>').first()
         if route:
             route.requests += 1
+        access_token_cookie = request.cookies.get('access_token')
+        # Decode the token using the secret key
+        decoded_token = decode_token(access_token_cookie)
 
+        username = decoded_token['username']
         user = UserModel.query.filter_by(username=username).first_or_404()
         user.requests += 1
         db.session.commit()
