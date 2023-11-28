@@ -192,7 +192,8 @@ class AdminDashboard(MethodView):
             return jsonify({"error": f"Token verification failed: {e}"}), 401
 
         is_admin = jwt_data.get("is_admin", False)
-
+        response = make_response({"message": "Successfully logged out."})
+        response.headers.add('Access-Control-Allow-Credentials', 'true')
         if is_admin:
             return jsonify(is_admin=True)
         else:
