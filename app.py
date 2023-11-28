@@ -17,6 +17,7 @@ import redis
 
 from resources.users import blp as UserBlueprint
 from resources.document import chat_bp as Chat
+from resources.api import blp as API
 
 # Creates app
 def create_app(db_url=None):
