@@ -171,9 +171,7 @@ class User(MethodView):
         db.session.commit()
 
         return {"message": "User is no longer an admin"}, 200
-    
-@blp.route(f"{API_VERSION}/admin-dashboard")
-class AdminDashboard(MethodView):
+
     @jwt_required()
     @cross_origin(supports_credentials=True)
     def get(self):
@@ -195,6 +193,22 @@ class AdminDashboard(MethodView):
         is_admin = jwt_data.get("is_admin", False)
         response = make_response({"message": "Successfully logged out."})
         response.headers.add('Access-Control-Allow-Credentials', 'true')
+        if is_admin:
+            return jsonify(is_admin=True)
+        else:
+            return jsonify(is_admin=False)
+
+@blp.route(f"{API_VERSION}/admin-dashboard")
+class AdminDashboard(MethodView):
+    @jwt_required()
+    def get(self):
+        route = RequestModel.query.filter_by(method='GET', endpoint=f'{API_VERSION}/admin-dashboard').first()
+        if route:
+            route.requests += 1
+        db.session.commit()
+        jwt_data = get_jwt()
+        is_admin = jwt_data.get("is_admin", False)
+
         if is_admin:
             return jsonify(is_admin=True)
         else:
@@ -227,3 +241,6 @@ class UserLogout(MethodView):
 
         return response
 
+# admin dashboard in progress --- set
+# @blp.route(f"{API_VERSION}/admin-dashboard")
+# class AdminDashboard(MethodView):
