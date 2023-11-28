@@ -69,7 +69,8 @@ class UserLogin(MethodView):
             UserModel.username == user_data["username"]).first()
 
         if user and pbkdf2_sha256.verify(user_data["password"], user.password):
-            access_token = create_access_token(identity=user.admin)
+            additional_claims = {"username": user.username, "admin": user.admin}
+            access_token = create_access_token(identity=user.admin, additional_claims=additional_claims)
             user.requests += 1
             route = RequestModel.query.filter_by(method='POST', endpoint=f'{API_VERSION}/login').first()
             if route:
