@@ -113,18 +113,26 @@ class UsersList(MethodView):
         users = UserModel.query.all()
         return users
 
-@blp.route(f"{API_VERSION}/user/<int:user_id>")
+@blp.route(f"{API_VERSION}/user/<string:username>")
 class User(MethodView):
     @blp.response(200, UserSchema)
-    def get(self, user_id):
-        route = RequestModel.query.filter_by(method='GET', endpoint=f'{API_VERSION}/user/<int:user_id>').first()
+    def get(self, username):
+        route = RequestModel.query.filter_by(method='GET', endpoint=f'{API_VERSION}/user/<string:username>').first()
         if route:
             route.requests += 1
-        user = UserModel.query.get_or_404(user_id)
+
+        user = UserModel.query.filter_by(username=username).first_or_404()
         user.requests += 1
         db.session.commit()
-        return user
-    
+
+        # Include the number of API requests in the response
+        user_data = UserSchema().dump(user)
+        user_data["api_requests"] = user.requests
+
+        return user_data
+
+@blp.route(f"{API_VERSION}/user/<int:user_id>")
+class User(MethodView):    
     @jwt_required()
     def delete(self, user_id):
         route = RequestModel.query.filter_by(method='DELETE', endpoint=f'{API_VERSION}/user/<int:user_id>').first()
