@@ -133,13 +133,16 @@ class User(MethodView):
 
 @blp.route(f"{API_VERSION}/user/<int:user_id>")
 class User(MethodView):    
-    @jwt_required()
     def delete(self, user_id):
         route = RequestModel.query.filter_by(method='DELETE', endpoint=f'{API_VERSION}/user/<int:user_id>').first()
         if route:
             route.requests += 1
-        jwt = get_jwt()
-        is_admin = jwt.get("admin", False)  # Default to False if "is_admin" is not present
+        # Access the access_token cookie
+        access_token_cookie = request.cookies.get('access_token')
+        # Decode the token using the secret key
+        decoded_token = decode_token(access_token_cookie)
+
+        is_admin = decoded_token.get("admin", False)  # Default to False if "is_admin" is not present
         if not is_admin:
             abort(401, message="Admin privilege required")
         user = UserModel.query.get_or_404(user_id)
@@ -147,13 +150,17 @@ class User(MethodView):
         db.session.commit()
         return {"message": "User deleted"}, 200
 
-    @jwt_required()
     def put(self, user_id):
         route = RequestModel.query.filter_by(method='PUT', endpoint=f'{API_VERSION}/user/<int:user_id>').first()
         if route:
             route.requests += 1
-        jwt = get_jwt()
-        is_admin = jwt.get("admin", False)
+        
+        # Access the access_token cookie
+        access_token_cookie = request.cookies.get('access_token')
+        # Decode the token using the secret key
+        decoded_token = decode_token(access_token_cookie)
+
+        is_admin = decoded_token.get("admin", False)
 
         if not is_admin:
             abort(401, message="Admin privilege required")
@@ -164,13 +171,15 @@ class User(MethodView):
 
         return {"message": "User is now an admin"}, 200
 
-    @jwt_required()
     def patch(self, user_id):
         route = RequestModel.query.filter_by(method='PATCH', endpoint=f'{API_VERSION}/user/<int:user_id>').first()
         if route:
             route.requests += 1
-        jwt = get_jwt()
-        is_admin = jwt.get("admin", False)
+        # Access the access_token cookie
+        access_token_cookie = request.cookies.get('access_token')
+        # Decode the token using the secret key
+        decoded_token = decode_token(access_token_cookie)
+        is_admin = decoded_token.get("admin", False)
 
         if not is_admin:
             abort(401, message="Admin privilege required")
