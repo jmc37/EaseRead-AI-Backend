@@ -32,11 +32,25 @@ class AllAPIRoutes(MethodView):
         # Query all unique API routes recorded in the RequestModel
         jwt = get_jwt()
         is_admin = jwt.get("is_admin", False)
+        api_routes = (
+                    db.session.query(RequestModel)
+                    .distinct(RequestModel.endpoint)
+                    .all()
+                )
 
+        # Convert the result to a list of dictionaries
+        api_routes_data = [
+            {
+                "id": route.id,
+                "method": route.method,
+                "endpoint": route.endpoint,
+                "requests": route.requests
+            }
+            for route in api_routes
+        ]
         if not is_admin:
             abort(401, message="Admin privilege required")
         # Extract endpoints from the result
-        api_routes = db.session.query(RequestModel.endpoint).distinct().all()
-        api_routes = [route[0] for route in api_routes]
+
 
         return jsonify(api_routes)
