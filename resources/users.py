@@ -126,7 +126,7 @@ class User(MethodView):
         db.session.commit()
 
         # Include the number of API requests in the response
-        return user.requests
+        return jsonify({"api_requests": user.requests})
 
 @blp.route(f"{API_VERSION}/user/<int:user_id>")
 class User(MethodView):    
