@@ -126,10 +126,7 @@ class User(MethodView):
         db.session.commit()
 
         # Include the number of API requests in the response
-        user_data = UserSchema().dump(user)
-        user_data["api_requests"] = user.requests
-
-        return user_data
+        return user.requests
 
 @blp.route(f"{API_VERSION}/user/<int:user_id>")
 class User(MethodView):    
