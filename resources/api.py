@@ -10,15 +10,15 @@ from flask_cors import cross_origin
 API_VERSION = "/API/v1"
 blp = Blueprint("API", "api", description="Operations on api count")
 
-@blp.route(f"{API_VERSION}/userapi")
-class UsersList(MethodView):
-    @jwt_required()
-    @blp.response(200, UserSchema(many=True))
-    def get(self):
-        # Your existing code for user API data retrieval
-        jwt = get_jwt()
-        users = UserModel.query.all()
-        return users
+# @blp.route(f"{API_VERSION}/userapi")
+# class UsersList(MethodView):
+#     @jwt_required()
+#     @blp.response(200, UserSchema(many=True))
+#     def get(self):
+#         # Your existing code for user API data retrieval
+#         jwt = get_jwt()
+#         users = UserModel.query.all()
+#         return users
 
 @blp.route(f"{API_VERSION}/allapi")
 class AllAPIRoutes(MethodView):
