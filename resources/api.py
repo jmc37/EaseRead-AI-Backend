@@ -30,9 +30,13 @@ class AllAPIRoutes(MethodView):
     @blp.response(200, description="Get all API routes")
     def get(self):
         # Query all unique API routes recorded in the RequestModel
-        api_routes = db.session.query(RequestModel.endpoint).distinct().all()
+        jwt = get_jwt()
+        is_admin = jwt.get("is_admin", False)
 
+        if not is_admin:
+            abort(401, message="Admin privilege required")
         # Extract endpoints from the result
+        api_routes = db.session.query(RequestModel.endpoint).distinct().all()
         api_routes = [route[0] for route in api_routes]
 
         return jsonify(api_routes)
