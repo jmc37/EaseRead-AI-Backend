@@ -54,7 +54,14 @@ class ChatView(MethodView):
             if route:
                 route.requests += 1
                 db.session.commit()
-            return jsonify({"answer": hugging_face_response[0].get("generated_text").replace("\n", "<br>")})
+            # Create a Flask response with CORS headers
+            response = jsonify({"answer": hugging_face_response[0].get("generated_text").replace("\n", "<br>")})
+            
+            # Add CORS headers to the response
+            response.headers.add('Access-Control-Allow-Origin', 'https://easeread-frontend.onrender.com')
+            response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
+            response.headers.add('Access-Control-Allow-Methods', 'OPTIONS, POST')
+            return response
 
         except Exception as e:
             print("Error during processing:", e)
