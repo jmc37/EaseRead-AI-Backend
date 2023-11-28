@@ -134,10 +134,6 @@ class User(MethodView):
         db.session.commit()
         # Include the number of API requests in the response
         response = jsonify({"api_requests": user.requests})
-        # Add CORS headers to the response
-        response.headers.add('Access-Control-Allow-Origin', 'https://easeread-frontend.onrender.com')
-        response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
-        response.headers.add('Access-Control-Allow-Methods', 'GET')
 
 
         return response
