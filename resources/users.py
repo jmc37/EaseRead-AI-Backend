@@ -175,6 +175,7 @@ class User(MethodView):
 @blp.route(f"{API_VERSION}/admin-dashboard")
 class AdminDashboard(MethodView):
     @jwt_required()
+    @cross_origin(supports_credentials=True)
     def get(self):
         route = RequestModel.query.filter_by(method='GET', endpoint=f'{API_VERSION}/admin-dashboard').first()
         if route:
