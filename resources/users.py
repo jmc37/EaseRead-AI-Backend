@@ -131,9 +131,15 @@ class User(MethodView):
         user = UserModel.query.filter_by(username=username).first_or_404()
         user.requests += 1
         db.session.commit()
-
         # Include the number of API requests in the response
-        return jsonify({"api_requests": user.requests})
+        response = jsonify({"api_requests": user.requests})
+        # Add CORS headers to the response
+        response.headers.add('Access-Control-Allow-Origin', 'https://easeread-frontend.onrender.com')
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
+        response.headers.add('Access-Control-Allow-Methods', 'OPTIONS, GET')
+
+
+        return response
 
 @blp.route(f"{API_VERSION}/user/<int:user_id>")
 class User(MethodView):    
