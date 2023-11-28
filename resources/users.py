@@ -181,19 +181,17 @@ class AdminDashboard(MethodView):
             route.requests += 1
         db.session.commit()
 
-        # Access JWT token from the Authorization header
-        jwt_token = request.headers.get("Authorization")
-        
-        # Extract the actual token value from the Authorization header
-        if jwt_token and jwt_token.startswith("Bearer "):
-            jwt_token = jwt_token[len("Bearer "):]
-
         # Access the access_token cookie
         access_token_cookie = request.cookies.get('access_token')
 
-        if jwt_token == access_token_cookie:
-            jwt_data = get_jwt()
-            is_admin = jwt_data.get("is_admin", False)
+        try:
+            # Verify the JWT token from the access cookie
+            jwt_data = get_jwt(cookie=str(access_token_cookie))
+        except Exception as e:
+            # Handle token verification failure (e.g., log an error message)
+            return jsonify({"error": f"Token verification failed: {e}"}), 401
+
+        is_admin = jwt_data.get("is_admin", False)
 
         if is_admin:
             return jsonify(is_admin=True)
@@ -211,8 +209,7 @@ class UserLogout(MethodView):
         db.session.commit()
         jti = get_jwt()["jti"]
         redis_key = f'token:{jti}'
-        expiration_time = get_jwt()["exp"] - get_jwt()["iat"]
-        
+        expiration_time = get_jwt()["exp"] - get_jwt()["iat"] 
         # Store the token in Redis with an expiration time
         try:
             redis_client.setex(redis_key, expiration_time, "revoked")
