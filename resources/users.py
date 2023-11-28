@@ -120,7 +120,7 @@ class UsersList(MethodView):
 class User(MethodView):
     @blp.response(200, UserSchema)
     def get(self, username):
-        route = RequestModel.query.filter_by(method='GET', endpoint=f'{API_VERSION}/user/<string:username>').first()
+        route = RequestModel.query.filter_by(method='GET', endpoint=f'{API_VERSION}/userRequests').first()
         if route:
             route.requests += 1
         access_token_cookie = request.cookies.get('access_token')
