@@ -118,6 +118,7 @@ class UsersList(MethodView):
 
 @blp.route(f"{API_VERSION}/userRequests")
 class User(MethodView):
+    @cross_origin(supports_credentials=True)
     @blp.response(200, UserSchema)
     def get(self):
         route = RequestModel.query.filter_by(method='GET', endpoint=f'{API_VERSION}/userRequests').first()
