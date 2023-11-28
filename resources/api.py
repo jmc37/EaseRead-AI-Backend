@@ -10,16 +10,6 @@ from flask_cors import cross_origin
 API_VERSION = "/API/v1"
 blp = Blueprint("API", "api", description="Operations on api count")
 
-# @blp.route(f"{API_VERSION}/userapi")
-# class UsersList(MethodView):
-#     @jwt_required()
-#     @blp.response(200, UserSchema(many=True))
-#     def get(self):
-#         # Your existing code for user API data retrieval
-#         jwt = get_jwt()
-#         users = UserModel.query.all()
-#         return users
-
 @blp.route(f"{API_VERSION}/allapi")
 class AllAPIRoutes(MethodView):
     @jwt_required()
@@ -34,5 +24,16 @@ class AllAPIRoutes(MethodView):
         # Query all unique API routes recorded in the RequestModel
         requests = RequestModel.query.all()
 
+        # Convert the list of RequestModel instances to a list of dictionaries
+        requests_data = [
+            {
+                "id": request.id,
+                "method": request.method,
+                "endpoint": request.endpoint,
+                "requests": request.requests,
+                # Add more attributes as needed, ensuring they are JSON serializable
+            }
+            for request in requests
+        ]
 
-        return requests
+        return jsonify(requests_data)
